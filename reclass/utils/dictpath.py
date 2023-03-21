@@ -139,7 +139,12 @@ class DictPath(object):
                     parts = []
                 elif (part == ".self_name"):
                     # e.g. ${:.self_name} returns parent key name
-                    return parts[-1]
+                    try:
+                        return parts[-1]
+                    except IndexError:
+                        # You can't access values outside of '.parameters'. Using 'parameters'.
+                        # We could throw a more precise error ...
+                        return "parameters"
                 else:  
                     # you can mix normal key stepping with new features
                     parts.append(part)

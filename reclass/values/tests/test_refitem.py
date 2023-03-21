@@ -44,6 +44,11 @@ class TestRefItem(unittest.TestCase):
 
         self.assertEquals(result, 1)
 
+    def test_default_resolve_ok(self):
+        reference = RefItem('', Settings({'delimiter': ':'}))
+        result = reference._resolve('non:existing||default', {'foo':'bar'})
+        self.assertEquals(result, 'default')
+
     def test__resolve_fails(self):
         refitem = RefItem('', Settings({'delimiter': ':'}))
         context = {'foo':{'bar': 1}}

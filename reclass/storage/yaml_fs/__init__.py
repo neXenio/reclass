@@ -6,8 +6,7 @@
 # Copyright © 2007–14 martin f. krafft <madduck@madduck.net>
 # Released under the terms of the Artistic Licence 2.0
 #
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import sys
@@ -22,12 +21,14 @@ from reclass.storage.yamldata import YamlData
 
 from .directory import Directory
 
-FILE_EXTENSION = ('.yml', '.yaml')
-STORAGE_NAME = 'yaml_fs'
+FILE_EXTENSION = (".yml", ".yaml")
+STORAGE_NAME = "yaml_fs"
+
 
 def vvv(msg):
-    #print(msg, file=sys.stderr)
+    # print(msg, file=sys.stderr)
     pass
+
 
 def path_mangler(inventory_base_uri, nodes_uri, classes_uri):
 
@@ -35,8 +36,8 @@ def path_mangler(inventory_base_uri, nodes_uri, classes_uri):
         # if inventory_base is not given, default to current directory
         inventory_base_uri = os.getcwd()
 
-    nodes_uri = nodes_uri or 'nodes'
-    classes_uri = classes_uri or 'classes'
+    nodes_uri = nodes_uri or "nodes"
+    classes_uri = classes_uri or "classes"
 
     def _path_mangler_inner(path):
         ret = os.path.join(inventory_base_uri, path)
@@ -54,7 +55,6 @@ def path_mangler(inventory_base_uri, nodes_uri, classes_uri):
 
 
 class ExternalNodeStorage(ExternalNodeStorageBase):
-
     def __init__(self, nodes_uri, classes_uri, compose_node_name):
         super(ExternalNodeStorage, self).__init__(STORAGE_NAME, compose_node_name)
 
@@ -64,16 +64,19 @@ class ExternalNodeStorage(ExternalNodeStorageBase):
 
         if classes_uri is not None:
             self._classes_uri = classes_uri
-            self._classes = self._enumerate_inventory(classes_uri, self.class_name_mangler)
+            self._classes = self._enumerate_inventory(
+                classes_uri, self.class_name_mangler
+            )
 
     nodes_uri = property(lambda self: self._nodes_uri)
     classes_uri = property(lambda self: self._classes_uri)
 
     def _enumerate_inventory(self, basedir, name_mangler):
         ret = {}
+
         def register_fn(dirpath, filenames):
             filenames = [f for f in filenames if f.endswith(FILE_EXTENSION)]
-            vvv('REGISTER {0} in path {1}'.format(filenames, dirpath))
+            vvv("REGISTER {0} in path {1}".format(filenames, dirpath))
             for f in filenames:
                 name = os.path.splitext(f)[0]
                 relpath = os.path.relpath(dirpath, basedir)
@@ -82,8 +85,7 @@ class ExternalNodeStorage(ExternalNodeStorageBase):
                 uri = os.path.join(dirpath, f)
                 if name in ret:
                     E = reclass.errors.DuplicateNodeNameError
-                    raise E(self.name, name,
-                            os.path.join(basedir, ret[name]), uri)
+                    raise E(self.name, name, os.path.join(basedir, ret[name]), uri)
                 if relpath:
                     f = os.path.join(relpath, f)
                 ret[name] = f
@@ -93,7 +95,7 @@ class ExternalNodeStorage(ExternalNodeStorageBase):
         return ret
 
     def get_node(self, name, settings):
-        vvv('GET NODE {0}'.format(name))
+        vvv("GET NODE {0}".format(name))
         try:
             relpath = self._nodes[name]
             path = os.path.join(self.nodes_uri, relpath)
@@ -104,7 +106,7 @@ class ExternalNodeStorage(ExternalNodeStorageBase):
         return entity
 
     def get_class(self, name, environment, settings):
-        vvv('GET CLASS {0}'.format(name))
+        vvv("GET CLASS {0}".format(name))
         try:
             path = os.path.join(self.classes_uri, self._classes[name])
             pathname = os.path.splitext(self._classes[name])[0]

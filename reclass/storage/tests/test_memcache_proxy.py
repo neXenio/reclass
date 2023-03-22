@@ -24,54 +24,79 @@ except ImportError:
 
 
 class TestMemcacheProxy(unittest.TestCase):
-
     def setUp(self):
         self._storage = mock.MagicMock(spec_set=NodeStorageBase)
 
     def test_no_nodes_caching(self):
         p = MemcacheProxy(self._storage, cache_nodes=False)
-        NAME = 'foo'; NAME2 = 'bar'; RET = 'baz'; SETTINGS = Settings()
+        NAME = "foo"
+        NAME2 = "bar"
+        RET = "baz"
+        SETTINGS = Settings()
         self._storage.get_node.return_value = RET
         self.assertEqual(p.get_node(NAME, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME2, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME2, SETTINGS), RET)
-        expected = [mock.call(NAME, SETTINGS), mock.call(NAME, SETTINGS),
-                    mock.call(NAME2, SETTINGS), mock.call(NAME2, SETTINGS)]
+        expected = [
+            mock.call(NAME, SETTINGS),
+            mock.call(NAME, SETTINGS),
+            mock.call(NAME2, SETTINGS),
+            mock.call(NAME2, SETTINGS),
+        ]
         self.assertListEqual(self._storage.get_node.call_args_list, expected)
 
     def test_nodes_caching(self):
         p = MemcacheProxy(self._storage, cache_nodes=True)
-        NAME = 'foo'; NAME2 = 'bar'; RET = 'baz'; SETTINGS = Settings()
+        NAME = "foo"
+        NAME2 = "bar"
+        RET = "baz"
+        SETTINGS = Settings()
         self._storage.get_node.return_value = RET
         self.assertEqual(p.get_node(NAME, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME2, SETTINGS), RET)
         self.assertEqual(p.get_node(NAME2, SETTINGS), RET)
-        expected = [mock.call(NAME, SETTINGS), mock.call(NAME2, SETTINGS)] # called once each
+        expected = [
+            mock.call(NAME, SETTINGS),
+            mock.call(NAME2, SETTINGS),
+        ]  # called once each
         self.assertListEqual(self._storage.get_node.call_args_list, expected)
 
     def test_no_classes_caching(self):
         p = MemcacheProxy(self._storage, cache_classes=False)
-        NAME = 'foo'; NAME2 = 'bar'; RET = 'baz'; SETTINGS = Settings()
+        NAME = "foo"
+        NAME2 = "bar"
+        RET = "baz"
+        SETTINGS = Settings()
         self._storage.get_class.return_value = RET
         self.assertEqual(p.get_class(NAME, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME2, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME2, None, SETTINGS), RET)
-        expected = [mock.call(NAME, None, SETTINGS), mock.call(NAME, None, SETTINGS),
-                    mock.call(NAME2, None, SETTINGS), mock.call(NAME2, None, SETTINGS)]
+        expected = [
+            mock.call(NAME, None, SETTINGS),
+            mock.call(NAME, None, SETTINGS),
+            mock.call(NAME2, None, SETTINGS),
+            mock.call(NAME2, None, SETTINGS),
+        ]
         self.assertListEqual(self._storage.get_class.call_args_list, expected)
 
     def test_classes_caching(self):
         p = MemcacheProxy(self._storage, cache_classes=True)
-        NAME = 'foo'; NAME2 = 'bar'; RET = 'baz'; SETTINGS = Settings()
+        NAME = "foo"
+        NAME2 = "bar"
+        RET = "baz"
+        SETTINGS = Settings()
         self._storage.get_class.return_value = RET
         self.assertEqual(p.get_class(NAME, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME2, None, SETTINGS), RET)
         self.assertEqual(p.get_class(NAME2, None, SETTINGS), RET)
-        expected = [mock.call(NAME, None, SETTINGS), mock.call(NAME2, None, SETTINGS)] # called once each
+        expected = [
+            mock.call(NAME, None, SETTINGS),
+            mock.call(NAME2, None, SETTINGS),
+        ]  # called once each
         self.assertListEqual(self._storage.get_class.call_args_list, expected)
 
     def test_nodelist_no_caching(self):
@@ -85,9 +110,9 @@ class TestMemcacheProxy(unittest.TestCase):
         p = MemcacheProxy(self._storage, cache_nodelist=True)
         p.enumerate_nodes()
         p.enumerate_nodes()
-        expected = [mock.call()] # once only
+        expected = [mock.call()]  # once only
         self.assertListEqual(self._storage.enumerate_nodes.call_args_list, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

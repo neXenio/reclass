@@ -16,6 +16,7 @@ from reclass.errors import InterpolationError
 
 from six import string_types
 
+
 class Value(object):
 
     _parser = Parser()
@@ -101,7 +102,7 @@ class Value(object):
         return self
 
     def __repr__(self):
-        return 'Value(%r)' % self._item
+        return "Value(%r)" % self._item
 
     def __str__(self):
         return str(self._item)

@@ -31,46 +31,56 @@ from reclass.version import *
 from reclass.constants import MODE_NODEINFO
 from reclass.settings import Settings
 
+
 def cli():
     try:
         # this adapter has to be symlinked to ansible_dir, so we can use this
         # information to initialise the inventory_base_uri to ansible_dir:
         ansible_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-        defaults = {'inventory_base_uri': ansible_dir,
-                    'no_refs' : False,
-                    'pretty_print' : True,
-                    'output' : 'json',
-                    'applications_postfix': '_hosts'
-                   }
+        defaults = {
+            "inventory_base_uri": ansible_dir,
+            "no_refs": False,
+            "pretty_print": True,
+            "output": "json",
+            "applications_postfix": "_hosts",
+        }
         defaults.update(find_and_read_configfile())
 
         def add_ansible_options_group(parser, defaults):
-            group = optparse.OptionGroup(parser, 'Ansible options',
-                                         'Ansible-specific options')
-            group.add_option('--applications-postfix',
-                             dest='applications_postfix',
-                             default=defaults.get('applications_postfix'),
-                             help='postfix to append to applications to '\
-                                  'turn them into groups')
+            group = optparse.OptionGroup(
+                parser, "Ansible options", "Ansible-specific options"
+            )
+            group.add_option(
+                "--applications-postfix",
+                dest="applications_postfix",
+                default=defaults.get("applications_postfix"),
+                help="postfix to append to applications to " "turn them into groups",
+            )
             parser.add_option_group(group)
 
-        options = get_options(RECLASS_NAME, VERSION, DESCRIPTION,
-                              inventory_shortopt='-l',
-                              inventory_longopt='--list',
-                              inventory_help='output the inventory',
-                              nodeinfo_shortopt='-t',
-                              nodeinfo_longopt='--host',
-                              nodeinfo_dest='hostname',
-                              nodeinfo_help='output host_vars for the given host',
-                              add_options_cb=add_ansible_options_group,
-                              defaults=defaults)
+        options = get_options(
+            RECLASS_NAME,
+            VERSION,
+            DESCRIPTION,
+            inventory_shortopt="-l",
+            inventory_longopt="--list",
+            inventory_help="output the inventory",
+            nodeinfo_shortopt="-t",
+            nodeinfo_longopt="--host",
+            nodeinfo_dest="hostname",
+            nodeinfo_help="output host_vars for the given host",
+            add_options_cb=add_ansible_options_group,
+            defaults=defaults,
+        )
 
-        storage = get_storage(options.storage_type,
-                              options.nodes_uri,
-                              options.classes_uri,
-                              options.compose_node_name)
-        class_mappings = defaults.get('class_mappings')
+        storage = get_storage(
+            options.storage_type,
+            options.nodes_uri,
+            options.classes_uri,
+            options.compose_node_name,
+        )
+        class_mappings = defaults.get("class_mappings")
         defaults.update(vars(options))
         settings = Settings(defaults)
         reclass = Core(storage, class_mappings, settings)
@@ -78,17 +88,17 @@ def cli():
         if options.mode == MODE_NODEINFO:
             data = reclass.nodeinfo(options.hostname)
             # Massage and shift the data like Ansible wants it
-            data['parameters']['__reclass__'] = data['__reclass__']
-            for i in ('classes', 'applications'):
-                data['parameters']['__reclass__'][i] = data[i]
-            data = data['parameters']
+            data["parameters"]["__reclass__"] = data["__reclass__"]
+            for i in ("classes", "applications"):
+                data["parameters"]["__reclass__"][i] = data[i]
+            data = data["parameters"]
 
         else:
             data = reclass.inventory()
             # Ansible inventory is only the list of groups. Groups are the set
             # of classes plus the set of applications with the postfix added:
-            groups = data['classes']
-            apps = data['applications']
+            groups = data["classes"]
+            apps = data["applications"]
             if options.applications_postfix:
                 postfix = options.applications_postfix
                 groups.update([(k + postfix, v) for (k, v) in iteritems(apps)])
@@ -104,5 +114,6 @@ def cli():
 
     sys.exit(posix.EX_OK)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

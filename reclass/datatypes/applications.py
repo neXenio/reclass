@@ -14,8 +14,9 @@ from __future__ import unicode_literals
 
 from .classes import Classes
 
+
 class Applications(Classes):
-    '''
+    """
     Extends Classes with the possibility to let specially formatted items
     remove earlier occurences of the item. For instance, if the "negater" is
     '~', then "adding" an element "~foo" to a list causes a previous element
@@ -23,11 +24,11 @@ class Applications(Classes):
     a reference of the negation is kept, in case the instance is later used to
     extend another instance, in which case the negations should apply to the
     instance to be extended.
-    '''
-    DEFAULT_NEGATION_PREFIX = '~'
+    """
 
-    def __init__(self, iterable=None,
-                 negation_prefix=DEFAULT_NEGATION_PREFIX):
+    DEFAULT_NEGATION_PREFIX = "~"
+
+    def __init__(self, iterable=None, negation_prefix=DEFAULT_NEGATION_PREFIX):
         self.negation_prefix = negation_prefix
         self._offset = len(negation_prefix)
         self._negations = []
@@ -36,7 +37,7 @@ class Applications(Classes):
     def append_if_new(self, item):
         self._assert_is_string(item)
         if item.startswith(self.negation_prefix):
-            item = item[self._offset:]
+            item = item[self._offset :]
             self._negations.append(item)
             try:
                 self._items.remove(item)
@@ -59,7 +60,11 @@ class Applications(Classes):
             self.append_if_new(i)
 
     def __repr__(self):
-        contents = self._items + \
-                ['%s%s' % (self.negation_prefix, i) for i in self._negations]
-        return "%s(%r, %r)" % (self.__class__.__name__, contents,
-                               str(self.negation_prefix))
+        contents = self._items + [
+            "%s%s" % (self.negation_prefix, i) for i in self._negations
+        ]
+        return "%s(%r, %r)" % (
+            self.__class__.__name__,
+            contents,
+            str(self.negation_prefix),
+        )

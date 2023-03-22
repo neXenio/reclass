@@ -15,7 +15,6 @@ from reclass.errors import ChangedConstantError, ResolveError, TypeMergeError
 
 
 class ValueList(object):
-
     def __init__(self, value, settings):
         self._settings = settings
         self._refs = []
@@ -29,7 +28,7 @@ class ValueList(object):
 
     @property
     def uri(self):
-        return '; '.join([str(x.uri) for x in self._values])
+        return "; ".join([str(x.uri) for x in self._values])
 
     def append(self, value):
         self._values.append(value)
@@ -111,19 +110,25 @@ class ValueList(object):
                 # ignore_overwritten_missing_references is set and we are
                 # dealing with a scalar value and it's not the last item in the
                 # values list
-                if (self._settings.ignore_overwritten_missing_references
-                        and not isinstance(output, (dict, list))
-                        and n != (len(self._values)-1)):
+                if (
+                    self._settings.ignore_overwritten_missing_references
+                    and not isinstance(output, (dict, list))
+                    and n != (len(self._values) - 1)
+                ):
                     new = None
                     last_error = e
-                    print("[WARNING] Reference '%s' undefined" % str(value),
-                          file=sys.stderr)
+                    print(
+                        "[WARNING] Reference '%s' undefined" % str(value),
+                        file=sys.stderr,
+                    )
                 else:
                     raise e
 
             if constant:
                 if self._settings.strict_constant_parameters:
-                    raise ChangedConstantError('{0}; {1}'.format(self._values[n-1].uri, self._values[n].uri))
+                    raise ChangedConstantError(
+                        "{0}; {1}".format(self._values[n - 1].uri, self._values[n].uri)
+                    )
                 else:
                     continue
 
@@ -133,17 +138,25 @@ class ValueList(object):
             else:
                 if isinstance(output, dict):
                     if isinstance(new, dict):
-                        p1 = Parameters(output, self._settings, None, parse_strings=False)
+                        p1 = Parameters(
+                            output, self._settings, None, parse_strings=False
+                        )
                         p2 = Parameters(new, self._settings, None, parse_strings=False)
                         p1.merge(p2)
                         output = p1.as_dict()
                     elif isinstance(new, list):
-                        raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
-                    elif self._settings.allow_scalar_over_dict or (self._settings.allow_none_override and new is None):
+                        raise TypeMergeError(
+                            self._values[n], self._values[n - 1], self.uri
+                        )
+                    elif self._settings.allow_scalar_over_dict or (
+                        self._settings.allow_none_override and new is None
+                    ):
                         output = new
                         deepCopied = False
                     else:
-                        raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
+                        raise TypeMergeError(
+                            self._values[n], self._values[n - 1], self.uri
+                        )
                 elif isinstance(output, list):
                     if isinstance(new, list):
                         if not deepCopied:
@@ -151,19 +164,27 @@ class ValueList(object):
                             deepCopied = True
                         output.extend(new)
                     elif isinstance(new, dict):
-                        raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
-                    elif self._settings.allow_scalar_over_list or (self._settings.allow_none_override and new is None):
+                        raise TypeMergeError(
+                            self._values[n], self._values[n - 1], self.uri
+                        )
+                    elif self._settings.allow_scalar_over_list or (
+                        self._settings.allow_none_override and new is None
+                    ):
                         output = new
                         deepCopied = False
                     else:
-                        raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
+                        raise TypeMergeError(
+                            self._values[n], self._values[n - 1], self.uri
+                        )
                 else:
                     if isinstance(new, dict):
                         if self._settings.allow_dict_over_scalar:
                             output = new
                             deepCopied = False
                         else:
-                            raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
+                            raise TypeMergeError(
+                                self._values[n], self._values[n - 1], self.uri
+                            )
                     elif isinstance(new, list):
                         if self._settings.allow_list_over_scalar:
                             output_list = list()
@@ -172,7 +193,9 @@ class ValueList(object):
                             output = output_list
                             deepCopied = True
                         else:
-                            raise TypeMergeError(self._values[n], self._values[n-1], self.uri)
+                            raise TypeMergeError(
+                                self._values[n], self._values[n - 1], self.uri
+                            )
                     else:
                         output = new
                         deepCopied = False

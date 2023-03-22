@@ -19,14 +19,14 @@ try:
 except ImportError:
     import mock
 
-TESTLIST1 = ['one', 'two', 'three']
-TESTLIST2 = ['red', 'green', '~two', '~three']
-GOALLIST = ['one', 'red', 'green']
+TESTLIST1 = ["one", "two", "three"]
+TESTLIST2 = ["red", "green", "~two", "~three"]
+GOALLIST = ["one", "red", "green"]
 
-#TODO: mock out the underlying list
+# TODO: mock out the underlying list
+
 
 class TestApplications(unittest.TestCase):
-
     def test_inheritance(self):
         a = Applications()
         self.assertIsInstance(a, Classes)
@@ -51,26 +51,33 @@ class TestApplications(unittest.TestCase):
         self.assertSequenceEqual(a, TESTLIST1[::2])
 
     def test_repr_empty(self):
-        negater = '%%'
+        negater = "%%"
         a = Applications(negation_prefix=negater)
-        self.assertEqual('%r' % a, "%s(%r, '%s')" % (a.__class__.__name__, [], negater))
+        self.assertEqual("%r" % a, "%s(%r, '%s')" % (a.__class__.__name__, [], negater))
 
     def test_repr_contents(self):
-        negater = '%%'
+        negater = "%%"
         a = Applications(TESTLIST1, negation_prefix=negater)
-        self.assertEqual('%r' % a, "%s(%r, '%s')" % (a.__class__.__name__, TESTLIST1, negater))
+        self.assertEqual(
+            "%r" % a, "%s(%r, '%s')" % (a.__class__.__name__, TESTLIST1, negater)
+        )
 
     def test_repr_negations(self):
-        negater = '~'
+        negater = "~"
         a = Applications(TESTLIST2, negation_prefix=negater)
-        self.assertEqual('%r' % a, "%s(%r, '%s')" % (a.__class__.__name__, TESTLIST2, negater))
+        self.assertEqual(
+            "%r" % a, "%s(%r, '%s')" % (a.__class__.__name__, TESTLIST2, negater)
+        )
 
     def test_repr_negations_interspersed(self):
-        l = ['a', '~b', 'a', '~d']
+        l = ["a", "~b", "a", "~d"]
         a = Applications(l)
         is_negation = lambda x: x.startswith(a.negation_prefix)
-        GOAL = list(filter(lambda x: not is_negation(x), set(l))) + list(filter(is_negation, l))
-        self.assertEqual('%r' % a, "%s(%r, '~')" % (a.__class__.__name__, GOAL))
+        GOAL = list(filter(lambda x: not is_negation(x), set(l))) + list(
+            filter(is_negation, l)
+        )
+        self.assertEqual("%r" % a, "%s(%r, '~')" % (a.__class__.__name__, GOAL))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

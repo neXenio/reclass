@@ -16,18 +16,29 @@ from .applications import Applications
 from .exports import Exports
 from .parameters import Parameters
 
+
 class Entity(object):
-    '''
+    """
     A collection of Classes, Parameters, and Applications, mainly as a wrapper
     for merging. The name and uri of an Entity will be updated to the name and
     uri of the Entity that is being merged.
-    '''
-    def __init__(self, settings, classes=None, applications=None,
-                 parameters=None, exports=None, uri=None, name=None,
-                 pathname=None, environment=None):
-        self._uri = '' if uri is None else uri
-        self._name = '' if name is None else name
-        self._pathname = '' if pathname is None else pathname
+    """
+
+    def __init__(
+        self,
+        settings,
+        classes=None,
+        applications=None,
+        parameters=None,
+        exports=None,
+        uri=None,
+        name=None,
+        pathname=None,
+        environment=None,
+    ):
+        self._uri = "" if uri is None else uri
+        self._name = "" if name is None else name
+        self._pathname = "" if pathname is None else pathname
         self._classes = self._set_field(classes, Classes)
         self._applications = self._set_field(applications, Applications)
         pars = [None, settings, uri]
@@ -57,8 +68,10 @@ class Entity(object):
         if received_value is None:
             return expected_type(*parameters)
         if not isinstance(received_value, expected_type):
-            raise TypeError('Entity.%s cannot be set to instance of type %s' %
-                            (type(expected_type), type(received_value)))
+            raise TypeError(
+                "Entity.%s cannot be set to instance of type %s"
+                % (type(expected_type), type(received_value))
+            )
         return received_value
 
     def merge(self, other):
@@ -91,27 +104,37 @@ class Entity(object):
         self._exports.interpolate_single_from_external(self._parameters, references)
 
     def __eq__(self, other):
-        return isinstance(other, type(self)) \
-                and self._applications == other.applications \
-                and self._classes == other.classes \
-                and self._parameters == other.parameters \
-                and self._exports == other.exports \
-                and self._name == other.name \
-                and self._uri == other.uri
+        return (
+            isinstance(other, type(self))
+            and self._applications == other.applications
+            and self._classes == other.classes
+            and self._parameters == other.parameters
+            and self._exports == other.exports
+            and self._name == other.name
+            and self._uri == other.uri
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __repr__(self):
         return "%s(%r, %r, %r, %r, uri=%r, name=%r, pathname=%r, environment=%r)" % (
-                   self.__class__.__name__, self.classes, self.applications,
-                   self.parameters, self.exports, self.uri, self.name,
-                   self.pathname, self.environment)
+            self.__class__.__name__,
+            self.classes,
+            self.applications,
+            self.parameters,
+            self.exports,
+            self.uri,
+            self.name,
+            self.pathname,
+            self.environment,
+        )
 
     def as_dict(self):
-        return {'classes': self._classes.as_list(),
-                'applications': self._applications.as_list(),
-                'parameters': self._parameters.as_dict(),
-                'exports': self._exports.as_dict(),
-                'environment': self._environment
-               }
+        return {
+            "classes": self._classes.as_list(),
+            "applications": self._applications.as_list(),
+            "parameters": self._parameters.as_dict(),
+            "exports": self._exports.as_dict(),
+            "environment": self._environment,
+        }

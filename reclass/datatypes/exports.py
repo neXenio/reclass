@@ -18,8 +18,8 @@ from reclass.values.value import Value
 from reclass.values.valuelist import ValueList
 from reclass.utils.dictpath import DictPath
 
-class Exports(Parameters):
 
+class Exports(Parameters):
     def __init__(self, mapping, settings, uri):
         super(Exports, self).__init__(mapping, settings, uri)
 
@@ -28,7 +28,7 @@ class Exports(Parameters):
         self._unrendered.pop(key, None)
 
     def overwrite(self, other):
-        overdict = {'~' + key: value for (key, value) in iteritems(other)}
+        overdict = {"~" + key: value for (key, value) in iteritems(other)}
         self.merge(overdict)
 
     def interpolate_from_external(self, external):
@@ -37,7 +37,9 @@ class Exports(Parameters):
             value = path.get_value(self._base)
             if isinstance(value, (Value, ValueList)):
                 external._interpolate_references(path, value, None)
-                new = self._interpolate_render_from_external(external._base, path, value)
+                new = self._interpolate_render_from_external(
+                    external._base, path, value
+                )
                 path.set_value(self._base, new)
                 del self._unrendered[path]
             else:
@@ -59,7 +61,9 @@ class Exports(Parameters):
                 if isinstance(value, (Value, ValueList)):
                     try:
                         external._interpolate_references(path, value, None)
-                        new = self._interpolate_render_from_external(external._base, path, value)
+                        new = self._interpolate_render_from_external(
+                            external._base, path, value
+                        )
                         path.set_value(self._base, new)
                     except ResolveError as e:
                         if query.ignore_failed_render():

@@ -11,82 +11,106 @@ SETTINGS = settings.Settings()
 # cluttering up the code.
 test_pairs_simple = (
     # Basic test cases.
-    ('${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
+    ("${foo}", [(pf.tags.REF, [(pf.tags.STR, "foo")])]),
     # Basic combinations.
-    ('bar${foo}', [(pf.tags.STR, 'bar'),
-                   (pf.tags.REF, [(pf.tags.STR, 'foo')])]),
-    ('bar${foo}baz', [(pf.tags.STR, 'bar'),
-                      (pf.tags.REF, [(pf.tags.STR, 'foo')]),
-                      (pf.tags.STR, 'baz')]),
-    ('${foo}baz', [(pf.tags.REF, [(pf.tags.STR, 'foo')]),
-                   (pf.tags.STR, 'baz')]),
+    ("bar${foo}", [(pf.tags.STR, "bar"), (pf.tags.REF, [(pf.tags.STR, "foo")])]),
+    (
+        "bar${foo}baz",
+        [
+            (pf.tags.STR, "bar"),
+            (pf.tags.REF, [(pf.tags.STR, "foo")]),
+            (pf.tags.STR, "baz"),
+        ],
+    ),
+    ("${foo}baz", [(pf.tags.REF, [(pf.tags.STR, "foo")]), (pf.tags.STR, "baz")]),
     # Whitespace preservation cases.
-    ('bar ${foo}', [(pf.tags.STR, 'bar '),
-                    (pf.tags.REF, [(pf.tags.STR, 'foo')])]),
-    ('bar ${foo baz}', [(pf.tags.STR, 'bar '),
-                        (pf.tags.REF, [(pf.tags.STR, 'foo baz')])]),
-    ('bar${foo} baz', [(pf.tags.STR, 'bar'),
-                       (pf.tags.REF, [(pf.tags.STR, 'foo')]),
-                       (pf.tags.STR, ' baz')]),
-    (' bar${foo} baz ', [(pf.tags.STR, ' bar'),
-                         (pf.tags.REF, [(pf.tags.STR, 'foo')]),
-                         (pf.tags.STR, ' baz ')]),
+    ("bar ${foo}", [(pf.tags.STR, "bar "), (pf.tags.REF, [(pf.tags.STR, "foo")])]),
+    (
+        "bar ${foo baz}",
+        [(pf.tags.STR, "bar "), (pf.tags.REF, [(pf.tags.STR, "foo baz")])],
+    ),
+    (
+        "bar${foo} baz",
+        [
+            (pf.tags.STR, "bar"),
+            (pf.tags.REF, [(pf.tags.STR, "foo")]),
+            (pf.tags.STR, " baz"),
+        ],
+    ),
+    (
+        " bar${foo} baz ",
+        [
+            (pf.tags.STR, " bar"),
+            (pf.tags.REF, [(pf.tags.STR, "foo")]),
+            (pf.tags.STR, " baz "),
+        ],
+    ),
 )
 
 # Simple parser test cases are also included in this test grouop.
 test_pairs_full = (
     # Single elements sanity.
-    ('foo', [(pf.tags.STR, 'foo')]),
-    ('$foo', [(pf.tags.STR, '$foo')]),
-    ('{foo}', [(pf.tags.STR, '{foo}')]),
-    ('[foo]', [(pf.tags.STR, '[foo]')]),
-    ('$(foo)', [(pf.tags.STR, '$(foo)')]),
-    ('$[foo]', [(pf.tags.INV, [(pf.tags.STR, 'foo')])]),
-
+    ("foo", [(pf.tags.STR, "foo")]),
+    ("$foo", [(pf.tags.STR, "$foo")]),
+    ("{foo}", [(pf.tags.STR, "{foo}")]),
+    ("[foo]", [(pf.tags.STR, "[foo]")]),
+    ("$(foo)", [(pf.tags.STR, "$(foo)")]),
+    ("$[foo]", [(pf.tags.INV, [(pf.tags.STR, "foo")])]),
     # Escape sequences.
     # NOTE: these sequences apparently are not working as expected.
-    #(r'\\\\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
-    #(r'\\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
-    #(r'\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
-
+    # (r'\\\\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
+    # (r'\\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
+    # (r'\${foo}', [(pf.tags.REF, [(pf.tags.STR, 'foo')])]),
     # Basic combinations.
-    ('bar$[foo]', [(pf.tags.STR, 'bar'),
-                   (pf.tags.INV, [(pf.tags.STR, 'foo')])]),
-    ('bar$[foo]baz', [(pf.tags.STR, 'bar'),
-                      (pf.tags.INV, [(pf.tags.STR, 'foo')]),
-                      (pf.tags.STR, 'baz')]),
-    ('$[foo]baz', [(pf.tags.INV, [(pf.tags.STR, 'foo')]),
-                   (pf.tags.STR, 'baz')]),
-
+    ("bar$[foo]", [(pf.tags.STR, "bar"), (pf.tags.INV, [(pf.tags.STR, "foo")])]),
+    (
+        "bar$[foo]baz",
+        [
+            (pf.tags.STR, "bar"),
+            (pf.tags.INV, [(pf.tags.STR, "foo")]),
+            (pf.tags.STR, "baz"),
+        ],
+    ),
+    ("$[foo]baz", [(pf.tags.INV, [(pf.tags.STR, "foo")]), (pf.tags.STR, "baz")]),
     # Whitespace preservation in various positions.
-    (' foo ', [(pf.tags.STR, ' foo ')]),
-    ('foo bar', [(pf.tags.STR, 'foo bar')]),
-    ('bar $[foo baz]', [(pf.tags.STR, 'bar '),
-                        (pf.tags.INV, [(pf.tags.STR, 'foo baz')])]),
-    ('bar$[foo] baz ', [(pf.tags.STR, 'bar'),
-                        (pf.tags.INV, [(pf.tags.STR, 'foo')]),
-                        (pf.tags.STR, ' baz ')]),
-
+    (" foo ", [(pf.tags.STR, " foo ")]),
+    ("foo bar", [(pf.tags.STR, "foo bar")]),
+    (
+        "bar $[foo baz]",
+        [(pf.tags.STR, "bar "), (pf.tags.INV, [(pf.tags.STR, "foo baz")])],
+    ),
+    (
+        "bar$[foo] baz ",
+        [
+            (pf.tags.STR, "bar"),
+            (pf.tags.INV, [(pf.tags.STR, "foo")]),
+            (pf.tags.STR, " baz "),
+        ],
+    ),
     # Nested references and inventory items.
-    ('${foo}${bar}',[(pf.tags.REF, [(pf.tags.STR, 'foo')]),
-                     (pf.tags.REF, [(pf.tags.STR, 'bar')])]),
-    ('${foo${bar}}',[(pf.tags.REF, [(pf.tags.STR, 'foo'),
-                                    (pf.tags.REF, [(pf.tags.STR, 'bar')])])]),
-    ('$[foo]$[bar]',[(pf.tags.INV, [(pf.tags.STR, 'foo')]),
-                     (pf.tags.INV, [(pf.tags.STR, 'bar')])]),
+    (
+        "${foo}${bar}",
+        [(pf.tags.REF, [(pf.tags.STR, "foo")]), (pf.tags.REF, [(pf.tags.STR, "bar")])],
+    ),
+    (
+        "${foo${bar}}",
+        [(pf.tags.REF, [(pf.tags.STR, "foo"), (pf.tags.REF, [(pf.tags.STR, "bar")])])],
+    ),
+    (
+        "$[foo]$[bar]",
+        [(pf.tags.INV, [(pf.tags.STR, "foo")]), (pf.tags.INV, [(pf.tags.STR, "bar")])],
+    ),
     # NOTE: the cases below do not work as expected, which is probably a bug.
     # Any nesting in INV creates a string.
-    #('${$[foo]}', [(pf.tags.REF, [(pf.tags.INV, [(pf.tags.STR, 'foo')])])]),
-    #('$[${foo}]', [(pf.tags.INV, [(pf.tags.REF, [(pf.tags.STR, 'foo')])])]),
-    #('$[foo$[bar]]',[(pf.tags.INV, [(pf.tags.STR, 'foo'),
+    # ('${$[foo]}', [(pf.tags.REF, [(pf.tags.INV, [(pf.tags.STR, 'foo')])])]),
+    # ('$[${foo}]', [(pf.tags.INV, [(pf.tags.REF, [(pf.tags.STR, 'foo')])])]),
+    # ('$[foo$[bar]]',[(pf.tags.INV, [(pf.tags.STR, 'foo'),
     #                                (pf.tags.INV, [(pf.tags.STR, 'bar')])])]),
-
 ) + test_pairs_simple
 
 
 @ddt.ddt
 class TestRefParser(unittest.TestCase):
-
     @ddt.data(*test_pairs_full)
     def test_standard_reference_parser(self, data):
         instring, expected = data
@@ -99,7 +123,6 @@ class TestRefParser(unittest.TestCase):
 
 @ddt.ddt
 class TestSimpleRefParser(unittest.TestCase):
-
     @ddt.data(*test_pairs_simple)
     def test_standard_reference_parser(self, data):
         # NOTE: simple reference parser can parse references only. It fails
@@ -112,5 +135,5 @@ class TestSimpleRefParser(unittest.TestCase):
         self.assertEquals(expected, result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

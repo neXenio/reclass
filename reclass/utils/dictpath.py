@@ -14,8 +14,9 @@ from __future__ import unicode_literals
 import six
 import re
 
+
 class DictPath(object):
-    '''
+    """
     Represents a path into a nested dictionary.
 
     Given a dictionary like
@@ -57,7 +58,7 @@ class DictPath(object):
     names) will always be strings. Therefore it is okay to interpret each
     component of the path as a string, unless one finds a list at the current
     level down the nested dictionary.
-    '''
+    """
 
     def __init__(self, delim, contents=None):
         self._delim = delim
@@ -71,8 +72,9 @@ class DictPath(object):
         elif isinstance(contents, tuple):
             self._parts = list(contents)
         else:
-            raise TypeError('DictPath() takes string or list, '\
-                                'not %s' % type(contents))
+            raise TypeError(
+                "DictPath() takes string or list, " "not %s" % type(contents)
+            )
 
     def __repr__(self):
         return "DictPath(%r, %r)" % (self._delim, str(self))
@@ -81,8 +83,9 @@ class DictPath(object):
         return self._delim.join(str(i) for i in self._parts)
 
     def __eq__(self, other):
-        if not (isinstance(other, six.string_types) or
-                isinstance(other, self.__class__)):
+        if not (
+            isinstance(other, six.string_types) or isinstance(other, self.__class__)
+        ):
             return False
         if isinstance(other, six.string_types):
             other = DictPath(self._delim, other)
@@ -113,7 +116,7 @@ class DictPath(object):
         return container
 
     def _split_string(self, string):
-        return re.split(r'(?<!\\)' + re.escape(self._delim), string)
+        return re.split(r"(?<!\\)" + re.escape(self._delim), string)
 
     def key_parts(self):
         return self._parts[:-1]

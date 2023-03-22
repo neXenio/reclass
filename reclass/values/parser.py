@@ -24,7 +24,6 @@ import six
 
 
 class Parser(object):
-
     def __init__(self):
         self._ref_parser = None
         self._simple_parser = None
@@ -52,8 +51,9 @@ class Parser(object):
                 raise ParseError(e.msg, e.line, e.col, e.lineno)
 
         self._settings = settings
-        sentinel_count = (value.count(settings.reference_sentinels[0]) +
-                          value.count(settings.export_sentinels[0]))
+        sentinel_count = value.count(settings.reference_sentinels[0]) + value.count(
+            settings.export_sentinels[0]
+        )
         if sentinel_count == 0:
             # speed up: only use pyparsing if there are sentinels in the value
             return ScaItem(value, self._settings)
@@ -71,15 +71,17 @@ class Parser(object):
             return items[0]
         return CompItem(items, self._settings)
 
-    _item_builders = {tags.STR: (lambda s, v: ScaItem(v, s._settings)),
-                      tags.REF: (lambda s, v: s._create_ref(v)),
-                      tags.INV: (lambda s, v: s._create_inv(v)) }
+    _item_builders = {
+        tags.STR: (lambda s, v: ScaItem(v, s._settings)),
+        tags.REF: (lambda s, v: s._create_ref(v)),
+        tags.INV: (lambda s, v: s._create_inv(v)),
+    }
 
     def _create_items(self, tokens):
-        return [self._item_builders[t](self, v) for t, v in tokens ]
+        return [self._item_builders[t](self, v) for t, v in tokens]
 
     def _create_ref(self, tokens):
-        items = [ self._item_builders[t](self, v) for t, v in tokens ]
+        items = [self._item_builders[t](self, v) for t, v in tokens]
         return RefItem(items, self._settings)
 
     def _create_inv(self, tokens):

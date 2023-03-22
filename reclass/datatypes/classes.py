@@ -15,15 +15,16 @@ import six
 import os
 from reclass.errors import InvalidClassnameError
 
-INVALID_CHARACTERS_FOR_CLASSNAMES = ' ' + os.sep
+INVALID_CHARACTERS_FOR_CLASSNAMES = " " + os.sep
 
 
 class Classes(object):
-    '''
+    """
     A very limited ordered set of strings with O(n) uniqueness constraints. It
     is neither a proper list or a proper set, on purpose, to keep things
     simple.
-    '''
+    """
+
     def __init__(self, iterable=None):
         self._items = []
         if iterable is not None:
@@ -57,8 +58,10 @@ class Classes(object):
 
     def _assert_is_string(self, item):
         if not isinstance(item, six.string_types):
-            raise TypeError('%s instances can only contain strings, '
-                            'not %s' % (self.__class__.__name__, type(item)))
+            raise TypeError(
+                "%s instances can only contain strings, "
+                "not %s" % (self.__class__.__name__, type(item))
+            )
 
     def _assert_valid_characters(self, item):
         for c in INVALID_CHARACTERS_FOR_CLASSNAMES:
@@ -75,4 +78,4 @@ class Classes(object):
         self._append_if_new(item)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._items)
+        return "%s(%r)" % (self.__class__.__name__, self._items)

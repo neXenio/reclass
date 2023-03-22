@@ -17,11 +17,12 @@ import unittest
 
 
 class TestLoader(unittest.TestCase):
-
     def test_load(self):
-        loader = StorageBackendLoader('yaml_fs')
+        loader = StorageBackendLoader("yaml_fs")
         from reclass.storage.yaml_fs import ExternalNodeStorage as YamlFs
+
         self.assertEqual(loader.load(), YamlFs)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

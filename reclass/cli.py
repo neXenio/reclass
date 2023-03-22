@@ -22,20 +22,24 @@ from reclass.errors import ReclassException
 from reclass.constants import MODE_NODEINFO
 from reclass.version import *
 
+
 def main():
     try:
-        defaults = {'no_refs' : OPT_NO_REFS,
-                    'pretty_print' : OPT_PRETTY_PRINT,
-                    'output' : OPT_OUTPUT
-                   }
+        defaults = {
+            "no_refs": OPT_NO_REFS,
+            "pretty_print": OPT_PRETTY_PRINT,
+            "output": OPT_OUTPUT,
+        }
         defaults.update(find_and_read_configfile())
 
         options = get_options(RECLASS_NAME, VERSION, DESCRIPTION, defaults=defaults)
-        storage = get_storage(options.storage_type,
-                              options.nodes_uri,
-                              options.classes_uri,
-                              options.compose_node_name)
-        class_mappings = defaults.get('class_mappings')
+        storage = get_storage(
+            options.storage_type,
+            options.nodes_uri,
+            options.classes_uri,
+            options.compose_node_name,
+        )
+        class_mappings = defaults.get("class_mappings")
         defaults.update(vars(options))
         settings = Settings(defaults)
         reclass = Core(storage, class_mappings, settings)
@@ -52,5 +56,6 @@ def main():
 
     sys.exit(posix.EX_OK)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

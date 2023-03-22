@@ -22,7 +22,7 @@ class ScaItem(item.Item):
     def merge_over(self, other):
         if other.type in [item.ItemTypes.SCALAR, item.ItemTypes.COMPOSITE]:
             return self
-        raise RuntimeError('Failed to merge %s over %s' % (self, other))
+        raise RuntimeError("Failed to merge %s over %s" % (self, other))
 
     def render(self, context, inventory):
         return self.contents

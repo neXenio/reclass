@@ -13,13 +13,14 @@ from __future__ import unicode_literals
 
 from reclass.storage import NodeStorageBase
 
-STORAGE_NAME = 'memcache_proxy'
+STORAGE_NAME = "memcache_proxy"
+
 
 class MemcacheProxy(NodeStorageBase):
-
-    def __init__(self, real_storage, cache_classes=True, cache_nodes=True,
-                 cache_nodelist=True):
-        name = '{0}({1})'.format(STORAGE_NAME, real_storage.name)
+    def __init__(
+        self, real_storage, cache_classes=True, cache_nodes=True, cache_nodelist=True
+    ):
+        name = "{0}({1})".format(STORAGE_NAME, real_storage.name)
         super(MemcacheProxy, self).__init__(name)
         self._real_storage = real_storage
         self._cache_classes = cache_classes

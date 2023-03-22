@@ -15,4 +15,4 @@ class ListItem(item.ContainerItem):
         if other.type == item.ItemTypes.LIST:
             other.contents.extend(self.contents)
             return other
-        raise RuntimeError('Failed to merge %s over %s'  % (self, other))
+        raise RuntimeError("Failed to merge %s over %s" % (self, other))

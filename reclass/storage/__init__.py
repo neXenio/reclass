@@ -13,8 +13,8 @@ from __future__ import unicode_literals
 
 from reclass.storage.common import NameMangler
 
-class NodeStorageBase(object):
 
+class NodeStorageBase(object):
     def __init__(self, name):
         self._name = name
 
@@ -38,7 +38,6 @@ class NodeStorageBase(object):
 
 
 class ExternalNodeStorageBase(NodeStorageBase):
-
     def __init__(self, name, compose_node_name):
         super(ExternalNodeStorageBase, self).__init__(name)
         self.class_name_mangler = NameMangler.classes

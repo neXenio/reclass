@@ -15,18 +15,18 @@ import os, sys
 from .version import RECLASS_NAME
 
 # defaults for the command-line options
-OPT_STORAGE_TYPE = 'yaml_fs'
-OPT_INVENTORY_BASE_URI = os.path.join('/etc', RECLASS_NAME)
-OPT_NODES_URI = 'nodes'
-OPT_CLASSES_URI = 'classes'
+OPT_STORAGE_TYPE = "yaml_fs"
+OPT_INVENTORY_BASE_URI = os.path.join("/etc", RECLASS_NAME)
+OPT_NODES_URI = "nodes"
+OPT_CLASSES_URI = "classes"
 OPT_PRETTY_PRINT = True
 OPT_GROUP_ERRORS = True
 OPT_COMPOSE_NODE_NAME = False
 OPT_NO_REFS = False
-OPT_OUTPUT = 'yaml'
+OPT_OUTPUT = "yaml"
 
 OPT_IGNORE_CLASS_NOTFOUND = False
-OPT_IGNORE_CLASS_NOTFOUND_REGEXP = ['.*']
+OPT_IGNORE_CLASS_NOTFOUND_REGEXP = [".*"]
 OPT_IGNORE_CLASS_NOTFOUND_WARNING = True
 
 OPT_IGNORE_OVERWRITTEN_MISSING_REFERENCES = True
@@ -41,21 +41,22 @@ OPT_ALLOW_NONE_OVERRIDE = False
 OPT_INVENTORY_IGNORE_FAILED_NODE = False
 OPT_INVENTORY_IGNORE_FAILED_RENDER = False
 
-CONFIG_FILE_SEARCH_PATH = [os.getcwd(),
-                           os.path.expanduser('~'),
-                           OPT_INVENTORY_BASE_URI,
-                           os.path.dirname(sys.argv[0])
-                          ]
-CONFIG_FILE_NAME = RECLASS_NAME + '-config.yml'
+CONFIG_FILE_SEARCH_PATH = [
+    os.getcwd(),
+    os.path.expanduser("~"),
+    OPT_INVENTORY_BASE_URI,
+    os.path.dirname(sys.argv[0]),
+]
+CONFIG_FILE_NAME = RECLASS_NAME + "-config.yml"
 
-REFERENCE_SENTINELS = ('${', '}')
-EXPORT_SENTINELS = ('$[', ']')
-PARAMETER_INTERPOLATION_DELIMITER = ':'
-PARAMETER_DICT_KEY_OVERRIDE_PREFIX = '~'
-PARAMETER_DICT_KEY_CONSTANT_PREFIX = '='
-ESCAPE_CHARACTER = '\\'
+REFERENCE_SENTINELS = ("${", "}")
+EXPORT_SENTINELS = ("$[", "]")
+PARAMETER_INTERPOLATION_DELIMITER = ":"
+PARAMETER_DICT_KEY_OVERRIDE_PREFIX = "~"
+PARAMETER_DICT_KEY_CONSTANT_PREFIX = "="
+ESCAPE_CHARACTER = "\\"
 
 AUTOMATIC_RECLASS_PARAMETERS = True
-DEFAULT_ENVIRONMENT = 'base'
+DEFAULT_ENVIRONMENT = "base"
 
 CLASS_MAPPINGS_MATCH_PATH = False

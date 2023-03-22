@@ -11,8 +11,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-class OutputterBase(object):
 
+class OutputterBase(object):
     def __init__(self):
         pass
 
@@ -21,16 +21,17 @@ class OutputterBase(object):
 
 
 class OutputLoader(object):
-
     def __init__(self, outputter):
-        self._name = 'reclass.output.' + outputter + '_outputter'
+        self._name = "reclass.output." + outputter + "_outputter"
         try:
             self._module = __import__(self._name, globals(), locals(), self._name)
         except ImportError:
             raise NotImplementedError()
 
-    def load(self, attr='Outputter'):
+    def load(self, attr="Outputter"):
         klass = getattr(self._module, attr, None)
         if klass is None:
-            raise AttributeError('Outputter class {0} does not export "{1}"'.format(self._name, klass))
+            raise AttributeError(
+                'Outputter class {0} does not export "{1}"'.format(self._name, klass)
+            )
         return klass

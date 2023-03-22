@@ -14,7 +14,6 @@ SETTINGS = Settings()
 
 
 class TestItemWithReferences(unittest.TestCase):
-
     def test_assembleRef_allrefs(self):
         phonyitem = MagicMock()
         phonyitem.has_references = True
@@ -38,11 +37,11 @@ class TestItemWithReferences(unittest.TestCase):
 
 
 class TestContainerItem(unittest.TestCase):
-
     def test_render(self):
-        container = ContainerItem('foo', SETTINGS)
+        container = ContainerItem("foo", SETTINGS)
 
-        self.assertEquals(container.render(None, None), 'foo')
+        self.assertEquals(container.render(None, None), "foo")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

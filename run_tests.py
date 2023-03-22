@@ -12,5 +12,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import unittest
-tests = unittest.TestLoader().discover('reclass')
+
+tests = unittest.TestLoader().discover("reclass")
 unittest.TextTestRunner(verbosity=1).run(tests)

@@ -1,6 +1,6 @@
 class ParameterList(list):
     def __init__(self, *args, **kwargs):
-        self._uri = kwargs.pop('uri', None)
+        self._uri = kwargs.pop("uri", None)
         list.__init__(self, *args, **kwargs)
 
     @property

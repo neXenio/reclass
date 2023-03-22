@@ -24,7 +24,16 @@ from six import iteritems
 
 from reclass.settings import Settings
 from reclass.datatypes import Entity, Classes, Parameters, Exports
-from reclass.errors import MappingFormatError, ClassNameResolveError, ClassNotFound, InvQueryClassNameResolveError, InvQueryClassNotFound, InvQueryError, InterpolationError, ResolveError
+from reclass.errors import (
+    MappingFormatError,
+    ClassNameResolveError,
+    ClassNotFound,
+    InvQueryClassNameResolveError,
+    InvQueryClassNotFound,
+    InvQueryError,
+    InterpolationError,
+    ResolveError,
+)
 from reclass.values.parser import Parser
 
 
@@ -39,11 +48,12 @@ class Core(object):
         self._input_data = input_data
         if self._settings.ignore_class_notfound:
             self._cnf_r = re.compile(
-                '|'.join(self._settings.ignore_class_notfound_regexp))
+                "|".join(self._settings.ignore_class_notfound_regexp)
+            )
 
     @staticmethod
     def _get_timestamp():
-        return time.strftime('%c')
+        return time.strftime("%c")
 
     @staticmethod
     def _match_regexp(key, nodename):
@@ -57,24 +67,26 @@ class Core(object):
     def _shlex_split(instr):
         lexer = shlex.shlex(instr, posix=True)
         lexer.whitespace_split = True
-        lexer.commenters = ''
+        lexer.commenters = ""
         regexp = False
-        if instr[0] == '/':
-            lexer.quotes += '/'
-            lexer.escapedquotes += '/'
+        if instr[0] == "/":
+            lexer.quotes += "/"
+            lexer.escapedquotes += "/"
             regexp = True
         try:
             key = lexer.get_token()
         except ValueError as e:
-            raise MappingFormatError('Error in mapping "{0}": missing closing '
-                                     'quote (or slash)'.format(instr))
+            raise MappingFormatError(
+                'Error in mapping "{0}": missing closing '
+                "quote (or slash)".format(instr)
+            )
         if regexp:
-            key = '/{0}/'.format(key)
+            key = "/{0}/".format(key)
         return key, list(lexer)
 
     def _get_class_mappings_entity(self, entity):
         if not self._class_mappings:
-            return Entity(self._settings, name='empty (class mappings)')
+            return Entity(self._settings, name="empty (class mappings)")
         c = Classes()
         if self._settings.class_mappings_match_path:
             matchname = entity.pathname
@@ -83,7 +95,7 @@ class Core(object):
         for mapping in self._class_mappings:
             matched = False
             key, klasses = Core._shlex_split(mapping)
-            if key[0] == ('/'):
+            if key[0] == ("/"):
                 matched = Core._match_regexp(key[1:-1], matchname)
                 if matched:
                     for klass in klasses:
@@ -94,16 +106,21 @@ class Core(object):
                     for klass in klasses:
                         c.append_if_new(klass)
 
-        return Entity(self._settings, classes=c,
-                      name='class mappings for node {0}'.format(entity.name))
+        return Entity(
+            self._settings,
+            classes=c,
+            name="class mappings for node {0}".format(entity.name),
+        )
 
     def _get_input_data_entity(self):
         if not self._input_data:
-            return Entity(self._settings, name='empty (input data)')
+            return Entity(self._settings, name="empty (input data)")
         p = Parameters(self._input_data, self._settings)
-        return Entity(self._settings, parameters=p, name='input data')
+        return Entity(self._settings, parameters=p, name="input data")
 
-    def _recurse_entity(self, entity, merge_base=None, seen=None, nodename=None, environment=None):
+    def _recurse_entity(
+        self, entity, merge_base=None, seen=None, nodename=None, environment=None
+    ):
         if seen is None:
             seen = {}
 
@@ -111,12 +128,13 @@ class Core(object):
             environment = self._settings.default_environment
 
         if merge_base is None:
-            merge_base = Entity(self._settings, name='empty (@{0})'.format(nodename))
+            merge_base = Entity(self._settings, name="empty (@{0})".format(nodename))
 
         for klass in entity.classes.as_list():
             # class name contain reference
-            num_references = klass.count(self._settings.reference_sentinels[0]) +\
-                             klass.count(self._settings.export_sentinels[0])
+            num_references = klass.count(
+                self._settings.reference_sentinels[0]
+            ) + klass.count(self._settings.export_sentinels[0])
             if num_references > 0:
                 # Make a copy of merge_base.parameters to avoid running into
                 # issues as new data is merged into merge_base.parameters.
@@ -128,19 +146,29 @@ class Core(object):
                 # copy to resolve references in class names
                 mbparams.initialise_interpolation()
                 try:
-                    klass = str(self._parser.parse(klass, self._settings).render(mbparams.as_dict(), {}))
+                    klass = str(
+                        self._parser.parse(klass, self._settings).render(
+                            mbparams.as_dict(), {}
+                        )
+                    )
                 except ResolveError as e:
                     raise ClassNameResolveError(klass, nodename, entity.uri)
 
             if klass not in seen:
                 try:
-                    class_entity = self._storage.get_class(klass, environment, self._settings)
+                    class_entity = self._storage.get_class(
+                        klass, environment, self._settings
+                    )
                 except ClassNotFound as e:
                     if self._settings.ignore_class_notfound:
                         if self._cnf_r.match(klass):
                             if self._settings.ignore_class_notfound_warning:
                                 # TODO, add logging handler
-                                print("[WARNING] Reclass class not found: '%s'. Skipped!" % klass, file=sys.stderr)
+                                print(
+                                    "[WARNING] Reclass class not found: '%s'. Skipped!"
+                                    % klass,
+                                    file=sys.stderr,
+                                )
                             continue
                     e.nodename = nodename
                     e.uri = entity.uri
@@ -148,8 +176,13 @@ class Core(object):
 
                 # on every iteration, we pass what we have so far into the
                 # recursive descent …
-                descent = self._recurse_entity(class_entity, merge_base=merge_base, seen=seen,
-                                               nodename=nodename, environment=environment)
+                descent = self._recurse_entity(
+                    class_entity,
+                    merge_base=merge_base,
+                    seen=seen,
+                    nodename=nodename,
+                    environment=environment,
+                )
                 # … therefore, we don't need to merge the result of the
                 # recursive descent as the result is a reference to the same
                 # merge_base object we passed to the call originally, with the
@@ -166,19 +199,19 @@ class Core(object):
     def _get_automatic_parameters(self, nodename, environment):
         if self._settings.automatic_parameters:
             pars = {
-                '_reclass_': {
-                    'name': {
-                        'full': nodename,
-                        'short': nodename.split('.').pop(),
-                        'path': os.path.join(*nodename.split('.')),
-                        'parts': nodename.split('.')
+                "_reclass_": {
+                    "name": {
+                        "full": nodename,
+                        "short": nodename.split(".").pop(),
+                        "path": os.path.join(*nodename.split(".")),
+                        "parts": nodename.split("."),
                     },
-                'environment': environment
+                    "environment": environment,
                 }
             }
-            return Parameters(pars, self._settings, '__auto__')
+            return Parameters(pars, self._settings, "__auto__")
         else:
-            return Parameters({}, self._settings, '')
+            return Parameters({}, self._settings, "")
 
     def _get_inventory(self, all_envs, environment, queries):
         inventory = {}
@@ -219,22 +252,37 @@ class Core(object):
         node_entity = self._storage.get_node(nodename, self._settings)
         if node_entity.environment == None:
             node_entity.environment = self._settings.default_environment
-        base_entity = Entity(self._settings, name='base')
+        base_entity = Entity(self._settings, name="base")
         base_entity.merge(self._get_class_mappings_entity(node_entity))
         base_entity.merge(self._get_input_data_entity())
-        base_entity.merge_parameters(self._get_automatic_parameters(nodename, node_entity.environment))
+        base_entity.merge_parameters(
+            self._get_automatic_parameters(nodename, node_entity.environment)
+        )
         seen = {}
-        merge_base = self._recurse_entity(base_entity, seen=seen, nodename=nodename,
-                                          environment=node_entity.environment)
-        return self._recurse_entity(node_entity, merge_base=merge_base, seen=seen,
-                                    nodename=nodename, environment=node_entity.environment)
+        merge_base = self._recurse_entity(
+            base_entity,
+            seen=seen,
+            nodename=nodename,
+            environment=node_entity.environment,
+        )
+        return self._recurse_entity(
+            node_entity,
+            merge_base=merge_base,
+            seen=seen,
+            nodename=nodename,
+            environment=node_entity.environment,
+        )
 
     def _nodeinfo(self, nodename, inventory):
         try:
             node = self._node_entity(nodename)
             node.initialise_interpolation()
             if node.parameters.has_inv_query and inventory is None:
-                inventory = self._get_inventory(node.parameters.needs_all_envs, node.environment, node.parameters.get_inv_queries())
+                inventory = self._get_inventory(
+                    node.parameters.needs_all_envs,
+                    node.environment,
+                    node.parameters.get_inv_queries(),
+                )
             node.interpolate(inventory)
             return node
         except InterpolationError as e:
@@ -242,13 +290,15 @@ class Core(object):
             raise
 
     def _nodeinfo_as_dict(self, nodename, entity):
-        ret = {'__reclass__' : {'node': entity.name,
-                                'name': nodename,
-                                'uri': entity.uri,
-                                'environment': entity.environment,
-                                'timestamp': Core._get_timestamp()
-                               },
-              }
+        ret = {
+            "__reclass__": {
+                "node": entity.name,
+                "name": nodename,
+                "uri": entity.uri,
+                "environment": entity.environment,
+                "timestamp": Core._get_timestamp(),
+            },
+        }
         ret.update(entity.as_dict())
         return ret
 
@@ -258,7 +308,7 @@ class Core(object):
     def inventory(self):
         query_nodes = set()
         entities = {}
-        inventory = self._get_inventory(True, '', None)
+        inventory = self._get_inventory(True, "", None)
         for n in self._storage.enumerate_nodes():
             entities[n] = self._nodeinfo(n, inventory)
             if entities[n].parameters.has_inv_query:
@@ -271,19 +321,20 @@ class Core(object):
         classes = {}
         for (f, nodeinfo) in iteritems(entities):
             d = nodes[f] = self._nodeinfo_as_dict(f, nodeinfo)
-            for a in d['applications']:
+            for a in d["applications"]:
                 if a in applications:
                     applications[a].append(f)
                 else:
                     applications[a] = [f]
-            for c in d['classes']:
+            for c in d["classes"]:
                 if c in classes:
                     classes[c].append(f)
                 else:
                     classes[c] = [f]
 
-        return {'__reclass__' : {'timestamp': Core._get_timestamp()},
-                'nodes': nodes,
-                'classes': classes,
-                'applications': applications
-               }
+        return {
+            "__reclass__": {"timestamp": Core._get_timestamp()},
+            "nodes": nodes,
+            "classes": classes,
+            "applications": applications,
+        }

@@ -21,21 +21,21 @@ except ImportError:
     import mock
 from reclass.errors import InvalidClassnameError
 
-TESTLIST1 = ['one', 'two', 'three']
-TESTLIST2 = ['red', 'green', 'blue']
+TESTLIST1 = ["one", "two", "three"]
+TESTLIST2 = ["red", "green", "blue"]
 
-#TODO: mock out the underlying list
+# TODO: mock out the underlying list
+
 
 class TestClasses(unittest.TestCase):
-
     def test_len_empty(self):
-        with mock.patch.object(Classes, 'merge_unique') as m:
+        with mock.patch.object(Classes, "merge_unique") as m:
             c = Classes()
             self.assertEqual(len(c), 0)
             self.assertFalse(m.called)
 
     def test_constructor(self):
-        with mock.patch.object(Classes, 'merge_unique') as m:
+        with mock.patch.object(Classes, "merge_unique") as m:
             c = Classes(TESTLIST1)
             m.assert_called_once_with(TESTLIST1)
 
@@ -77,10 +77,12 @@ class TestClasses(unittest.TestCase):
 
     def test_append_invalid_characters(self):
         c = Classes()
-        invalid_name = ' '.join(('foo', 'bar'))
+        invalid_name = " ".join(("foo", "bar"))
         with self.assertRaises(InvalidClassnameError) as e:
             c.append_if_new(invalid_name)
-        self.assertEqual(e.exception.message, "Invalid character ' ' in class name 'foo bar'.")
+        self.assertEqual(
+            e.exception.message, "Invalid character ' ' in class name 'foo bar'."
+        )
 
     def test_merge_unique(self):
         c = Classes(TESTLIST1)
@@ -110,19 +112,20 @@ class TestClasses(unittest.TestCase):
     def test_merge_unique_nonstring(self):
         c = Classes()
         with self.assertRaises(TypeError):
-            c.merge_unique([0,1,2])
+            c.merge_unique([0, 1, 2])
 
     def test_repr_empty(self):
         c = Classes()
-        self.assertEqual('%r' % c, '%s(%r)' % (c.__class__.__name__, []))
+        self.assertEqual("%r" % c, "%s(%r)" % (c.__class__.__name__, []))
 
     def test_repr_contents(self):
         c = Classes(TESTLIST1)
-        self.assertEqual('%r' % c, '%s(%r)' % (c.__class__.__name__, TESTLIST1))
+        self.assertEqual("%r" % c, "%s(%r)" % (c.__class__.__name__, TESTLIST1))
 
     def test_as_list(self):
         c = Classes(TESTLIST1)
         self.assertListEqual(c.as_list(), TESTLIST1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

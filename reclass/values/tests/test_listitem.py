@@ -9,8 +9,8 @@ import unittest
 
 SETTINGS = Settings()
 
-class TestListItem(unittest.TestCase):
 
+class TestListItem(unittest.TestCase):
     def test_merge_over_merge_list(self):
         listitem1 = ListItem([1], SETTINGS)
         listitem2 = ListItem([2], SETTINGS)
@@ -21,11 +21,12 @@ class TestListItem(unittest.TestCase):
         self.assertEquals(result.contents, expected.contents)
 
     def test_merge_other_types_not_allowed(self):
-        other = type('Other', (object,), {'type': 34})
-        val1 = Value(None, SETTINGS, '')
+        other = type("Other", (object,), {"type": 34})
+        val1 = Value(None, SETTINGS, "")
         listitem = ListItem(val1, SETTINGS)
 
         self.assertRaises(RuntimeError, listitem.merge_over, other)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

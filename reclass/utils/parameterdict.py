@@ -1,6 +1,6 @@
 class ParameterDict(dict):
     def __init__(self, *args, **kwargs):
-        self._uri = kwargs.pop('uri', None)
+        self._uri = kwargs.pop("uri", None)
         dict.__init__(self, *args, **kwargs)
 
     @property

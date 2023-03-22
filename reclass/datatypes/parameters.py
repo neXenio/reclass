@@ -30,7 +30,7 @@ from reclass.errors import BadReferencesError
 
 
 class Parameters(object):
-    '''
+    """
     A class to hold nested dictionaries with the following specialities:
 
       1. "merging" a dictionary (the "new" dictionary) into the current
@@ -51,7 +51,7 @@ class Parameters(object):
 
     To support these specialities, this class only exposes very limited
     functionality and does not try to be a really mapping object.
-    '''
+    """
 
     def __init__(self, mapping, settings, uri, parse_strings=True):
         self._settings = settings
@@ -70,12 +70,14 @@ class Parameters(object):
         return len(self._base)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._base)
+        return "%s(%r)" % (self.__class__.__name__, self._base)
 
     def __eq__(self, other):
-        return isinstance(other, type(self)) \
-                and self._base == other._base \
-                and self._settings == other._settings
+        return (
+            isinstance(other, type(self))
+            and self._base == other._base
+            and self._settings == other._settings
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -99,8 +101,9 @@ class Parameters(object):
             return self._wrap_list(value)
         else:
             try:
-                return Value(value, self._settings, self._uri,
-                             parse_string=self._parse_strings)
+                return Value(
+                    value, self._settings, self._uri, parse_string=self._parse_strings
+                )
             except InterpolationError as e:
                 e.context = DictPath(self._settings.delimiter)
                 raise
@@ -145,8 +148,9 @@ class Parameters(object):
                 uri = new.uri
             else:
                 uri = self._uri
-            values.append(Value(new, self._settings, uri,
-                                parse_string=self._parse_strings))
+            values.append(
+                Value(new, self._settings, uri, parse_string=self._parse_strings)
+            )
 
         return values
 
@@ -174,7 +178,12 @@ class Parameters(object):
             if key[0] in self._settings.dict_key_prefixes:
                 newkey = key[1:]
                 if not isinstance(value, Value):
-                    value = Value(value, self._settings, self._uri, parse_string=self._parse_strings)
+                    value = Value(
+                        value,
+                        self._settings,
+                        self._uri,
+                        parse_string=self._parse_strings,
+                    )
                 if key[0] == self._settings.dict_key_override_prefix:
                     value.overwrite = True
                 elif key[0] == self._settings.dict_key_constant_prefix:
@@ -236,8 +245,10 @@ class Parameters(object):
         elif isinstance(other, self.__class__):
             wrapped = other._wrap_dict(other._base)
         else:
-            raise TypeError('Cannot merge %s objects into %s' % (type(other),
-                            self.__class__.__name__))
+            raise TypeError(
+                "Cannot merge %s objects into %s"
+                % (type(other), self.__class__.__name__)
+            )
         self._base = self._merge_recurse(self._base, wrapped)
 
     def _render_simple_container(self, container, key, value, path):
@@ -280,7 +291,7 @@ class Parameters(object):
         return new_dict
 
     def _render_simple_list(self, item_list, path):
-        new_list = [ None ] * len(item_list)
+        new_list = [None] * len(item_list)
         for n, value in enumerate(item_list):
             self._render_simple_container(new_list, n, value, path)
         return new_list
@@ -306,8 +317,9 @@ class Parameters(object):
             self._inv_queries = []
             self.needs_all_envs = False
             self.resolve_errors = ResolveErrorList()
-            self._base = self._render_simple_dict(self._base,
-                 DictPath(self._settings.delimiter))
+            self._base = self._render_simple_dict(
+                self._base, DictPath(self._settings.delimiter)
+            )
 
     def _interpolate_inner(self, path, inventory):
         value = path.get_value(self._base)
@@ -376,4 +388,6 @@ class Parameters(object):
                 old = len(value.get_references())
                 value.assembleRefs(self._base)
                 if old == len(value.get_references()):
-                    raise BadReferencesError(value.get_references(), str(path), value.uri)
+                    raise BadReferencesError(
+                        value.get_references(), str(path), value.uri
+                    )

@@ -18,12 +18,15 @@ _SafeDumper = yaml.CSafeDumper if yaml.__with_libyaml__ else yaml.SafeDumper
 
 
 class Outputter(OutputterBase):
-
     def dump(self, data, pretty_print=False, no_refs=False):
-        if (no_refs):
-            return yaml.dump(data, default_flow_style=not pretty_print, Dumper=ExplicitDumper)
+        if no_refs:
+            return yaml.dump(
+                data, default_flow_style=not pretty_print, Dumper=ExplicitDumper
+            )
         else:
-            return yaml.dump(data, default_flow_style=not pretty_print, Dumper=_SafeDumper)
+            return yaml.dump(
+                data, default_flow_style=not pretty_print, Dumper=_SafeDumper
+            )
 
 
 class ExplicitDumper(_SafeDumper):

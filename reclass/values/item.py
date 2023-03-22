@@ -12,13 +12,12 @@ from enum import Enum
 
 from reclass.utils.dictpath import DictPath
 
-ItemTypes = Enum('ItemTypes',
-                 ['COMPOSITE', 'DICTIONARY', 'INV_QUERY', 'LIST',
-                  'REFERENCE', 'SCALAR'])
+ItemTypes = Enum(
+    "ItemTypes", ["COMPOSITE", "DICTIONARY", "INV_QUERY", "LIST", "REFERENCE", "SCALAR"]
+)
 
 
 class Item(object):
-
     def __init__(self, item, settings):
         self._settings = settings
         self.contents = item
@@ -36,7 +35,7 @@ class Item(object):
 
     @property
     def is_complex(self):
-        return (self.has_references | self.has_inv_query)
+        return self.has_references | self.has_inv_query
 
     def merge_over(self, item):
         msg = "Item class {0} does not implement merge_over()"
@@ -50,11 +49,10 @@ class Item(object):
         return self.type.name.lower()
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.contents)
+        return "%s(%r)" % (self.__class__.__name__, self.contents)
 
 
 class ItemWithReferences(Item):
-
     def __init__(self, items, settings):
         super(ItemWithReferences, self).__init__(items, settings)
         try:
@@ -84,7 +82,6 @@ class ItemWithReferences(Item):
 
 
 class ContainerItem(Item):
-
     def is_container(self):
         return True
 

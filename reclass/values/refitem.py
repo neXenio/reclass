@@ -32,12 +32,11 @@ class RefItem(item.ItemWithReferences):
             raise ResolveError(ref)
 
     def render(self, context, inventory):
-        #strings = [str(i.render(context, inventory)) for i in self.contents]
-        #return self._resolve("".join(strings), context)
-        return self._resolve(self._flatten_contents(context, inventory),
-                             context)
+        # strings = [str(i.render(context, inventory)) for i in self.contents]
+        # return self._resolve("".join(strings), context)
+        return self._resolve(self._flatten_contents(context, inventory), context)
 
     def __str__(self):
         strings = [str(i) for i in self.contents]
         rs = self._settings.reference_sentinels
-        return '{0}{1}{2}'.format(rs[0], ''.join(strings), rs[1])
+        return "{0}{1}{2}".format(rs[0], "".join(strings), rs[1])

@@ -12,6 +12,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import unittest
+import sys
 
 tests = unittest.TestLoader().discover("reclass")
-unittest.TextTestRunner(verbosity=1).run(tests)
+test_result = unittest.TextTestRunner(verbosity=1).run(tests)
+
+sys.exit(len(test_result.errors) + len(test_result.failures))

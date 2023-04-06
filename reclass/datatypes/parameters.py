@@ -185,6 +185,7 @@ class Parameters(object):
                 value = self._merge_recurse(cur.get(key), value)
             cur[key] = value
         cur.uri = new.uri
+
         return cur
 
     def _merge_recurse(self, cur, new):
@@ -324,6 +325,7 @@ class Parameters(object):
 
     def _interpolate_render_value(self, path, value, inventory):
         try:
+            value.path = path # pass the path to the resolver to support relative paths
             new = value.render(self._base, inventory)
         except ResolveError as e:
             e.context = path

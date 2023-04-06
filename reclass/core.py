@@ -16,7 +16,7 @@ import time
 import re
 import fnmatch
 import shlex
-import string
+import os
 import sys
 import yaml
 
@@ -72,26 +72,30 @@ class Core(object):
             key = '/{0}/'.format(key)
         return key, list(lexer)
 
-    def _get_class_mappings_entity(self, nodename):
+    def _get_class_mappings_entity(self, entity):
         if not self._class_mappings:
             return Entity(self._settings, name='empty (class mappings)')
         c = Classes()
+        if self._settings.class_mappings_match_path:
+            matchname = entity.pathname
+        else:
+            matchname = entity.name
         for mapping in self._class_mappings:
             matched = False
             key, klasses = Core._shlex_split(mapping)
             if key[0] == ('/'):
-                matched = Core._match_regexp(key[1:-1], nodename)
+                matched = Core._match_regexp(key[1:-1], matchname)
                 if matched:
                     for klass in klasses:
                         c.append_if_new(matched.expand(klass))
 
             else:
-                if Core._match_glob(key, nodename):
+                if Core._match_glob(key, matchname):
                     for klass in klasses:
                         c.append_if_new(klass)
 
         return Entity(self._settings, classes=c,
-                      name='class mappings for node {0}'.format(nodename))
+                      name='class mappings for node {0}'.format(entity.name))
 
     def _get_input_data_entity(self):
         if not self._input_data:
@@ -99,7 +103,7 @@ class Core(object):
         p = Parameters(self._input_data, self._settings)
         return Entity(self._settings, parameters=p, name='input data')
 
-    def _recurse_entity(self, entity, merge_base=None, context=None, seen=None, nodename=None, environment=None):
+    def _recurse_entity(self, entity, merge_base=None, seen=None, nodename=None, environment=None):
         if seen is None:
             seen = {}
 
@@ -109,21 +113,24 @@ class Core(object):
         if merge_base is None:
             merge_base = Entity(self._settings, name='empty (@{0})'.format(nodename))
 
-        if context is None:
-            context = Entity(self._settings, name='empty (@{0})'.format(nodename))
-
         for klass in entity.classes.as_list():
             # class name contain reference
             num_references = klass.count(self._settings.reference_sentinels[0]) +\
                              klass.count(self._settings.export_sentinels[0])
             if num_references > 0:
+                # Make a copy of merge_base.parameters to avoid running into
+                # issues as new data is merged into merge_base.parameters.
+                # We need to make a new copy on each pass to ensure we don't
+                # try to resolve references using a stale set of parameters,
+                # as merge_base is updated in the loop.
+                mbparams = copy.deepcopy(merge_base.parameters)
+                # Enable interpolation for copy of parameters before using the
+                # copy to resolve references in class names
+                mbparams.initialise_interpolation()
                 try:
-                    klass = str(self._parser.parse(klass, self._settings).render(merge_base.parameters.as_dict(), {}))
+                    klass = str(self._parser.parse(klass, self._settings).render(mbparams.as_dict(), {}))
                 except ResolveError as e:
-                    try:
-                        klass = str(self._parser.parse(klass, self._settings).render(context.parameters.as_dict(), {}))
-                    except ResolveError as e:
-                        raise ClassNameResolveError(klass, nodename, entity.uri)
+                    raise ClassNameResolveError(klass, nodename, entity.uri)
 
             if klass not in seen:
                 try:
@@ -139,11 +146,15 @@ class Core(object):
                     e.uri = entity.uri
                     raise
 
-                descent = self._recurse_entity(class_entity, context=context, seen=seen,
+                # on every iteration, we pass what we have so far into the
+                # recursive descent …
+                descent = self._recurse_entity(class_entity, merge_base=merge_base, seen=seen,
                                                nodename=nodename, environment=environment)
-                # on every iteration, we merge the result of the recursive
-                # descent into what we have so far…
-                merge_base.merge(descent)
+                # … therefore, we don't need to merge the result of the
+                # recursive descent as the result is a reference to the same
+                # merge_base object we passed to the call originally, with the
+                # new values merged in …
+                assert descent == merge_base
                 seen[klass] = True
 
         # … and finally, we merge what we have at this level into the
@@ -158,7 +169,9 @@ class Core(object):
                 '_reclass_': {
                     'name': {
                         'full': nodename,
-                        'short': nodename.split('.')[0]
+                        'short': nodename.split('.').pop(),
+                        'path': os.path.join(*nodename.split('.')),
+                        'parts': nodename.split('.')
                     },
                 'environment': environment
                 }
@@ -207,13 +220,13 @@ class Core(object):
         if node_entity.environment == None:
             node_entity.environment = self._settings.default_environment
         base_entity = Entity(self._settings, name='base')
-        base_entity.merge(self._get_class_mappings_entity(node_entity.name))
+        base_entity.merge(self._get_class_mappings_entity(node_entity))
         base_entity.merge(self._get_input_data_entity())
         base_entity.merge_parameters(self._get_automatic_parameters(nodename, node_entity.environment))
         seen = {}
         merge_base = self._recurse_entity(base_entity, seen=seen, nodename=nodename,
                                           environment=node_entity.environment)
-        return self._recurse_entity(node_entity, merge_base=merge_base, context=merge_base, seen=seen,
+        return self._recurse_entity(node_entity, merge_base=merge_base, seen=seen,
                                     nodename=nodename, environment=node_entity.environment)
 
     def _nodeinfo(self, nodename, inventory):

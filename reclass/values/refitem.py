@@ -29,8 +29,10 @@ class RefItem(item.ItemWithReferences):
         try:
             return path.get_value(context)
         except (KeyError, TypeError) as e:
-            if path.default:
-                return path.default
+            if refpath.default is not None:
+                if refpath.default == '':
+                    refpath.default = None
+                return refpath.default
             raise ResolveError(ref)
 
     def render(self, context, inventory):
